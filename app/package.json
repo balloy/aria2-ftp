@@ -1,0 +1,18 @@
+{
+  "name": "aria2-ftp",
+  "productName": "aria2-ftp",
+  "version": "0.1.0",
+  "description": "A FTP downloader supports Segmented Downloading",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "Ken Yang",
+    "email": "balloy@gmail.com",
+    "url": "https://github.com/balloy"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r babel-register ../internals/scripts/ElectronRebuild.js",
+    "postinstall": "npm run electron-rebuild"
+  },
+  "license": "MIT",
+  "dependencies": {}
+}

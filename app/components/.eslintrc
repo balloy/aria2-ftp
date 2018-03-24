@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "no-shadow": "off",
+    "import/first": "off",
+    "import/newline-after-import": "off",
+    "jsx-a11y/label-has-for": "off",
+    "react/require-default-props": "off",
+    "react/jsx-first-prop-new-line": "off",
+    "react/jsx-max-props-per-line": "off",
+    "react/jsx-boolean-value": "off"
+  }
+}

@@ -1,0 +1,37 @@
+/* stylelint-disable no-descending-specificity */
+
+/* hide table borders, and enable text-overflow: ellipsis */
+.ui-datatable .ui-datatable-thead > tr > th,
+.ui-datatable .ui-datatable-tfoot > tr > td,
+.ui-datatable .ui-datatable-data > tr > td {
+  border: 0 !important;
+  text-overflow: ellipsis !important;
+}
+
+/* hide table borders */
+.ui-datatable tr.ui-widget-content,
+.ui-datatable-scrollable-table-wrapper > table > tbody {
+  border: 0 !important;
+}
+
+/* disable progressbar transition */
+.ui-progressbar-determinate .ui-progressbar-value-animate {
+  -webkit-transition: none;
+  -moz-transition: none;
+  -o-transition: none;
+  transition: none;
+}
+
+.ui-panel .ui-panel-content {
+  padding: 0.1em 0.1em;
+}
+
+.ui-panel-content,
+.ui-panel-content-wrapper {
+  height: inherit;
+}
+
+.ui-inputtext {
+  margin-left: 0.3em;
+  margin-right: 0.5em;
+}
