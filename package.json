@@ -85,7 +85,10 @@
       ]
     },
     "nsis": {
-     "artifactName": "${productName}-setup-${version}.${ext}"
+     "artifactName": "${productName}-setup-${version}-win32.${ext}",
+     "oneClick": false,
+     "perMachine": true,
+     "allowToChangeInstallationDirectory": true
    },
     "linux": {
       "target": [
