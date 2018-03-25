@@ -8,6 +8,13 @@
 @import './primereact.patch.css';  /* used to make customization/enhancements */
 @import "./react-split-pane.css";
 @import "./layout.css";
+@import "./file-icon-classic.css";
+
+/* redefine file type icon size and margin */
+.fiv-cla {
+  font-size: 1.2em;
+  margin-right: 0.25em;
+}
 
 body {
   margin: 0;

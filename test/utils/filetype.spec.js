@@ -1,6 +1,9 @@
 
 import { getFileType, getTypeIcon, TYPE_FOLDER } from '../../app/utils/filetype';
 
+const fs = require('fs');
+const path = require('path');
+
 describe('utils', () => {
   describe('getFileType', () => {
     it('should return extension as type', () => {
@@ -26,14 +29,29 @@ describe('utils', () => {
       expect(getTypeIcon(TYPE_FOLDER)).toBe('folder');
     });
 
-    it('should return "file-$type" for known file types', () => {
-      expect(getTypeIcon('jpg')).toBe('file-image');
-      expect(getTypeIcon('docx')).toBe('file-word');
-      expect(getTypeIcon('mp4')).toBe('file-video');
+    it('should return type for known file types', () => {
+      expect(getTypeIcon('jpg')).toBe('jpg');
+      expect(getTypeIcon('docx')).toBe('docx');
+      expect(getTypeIcon('mp4')).toBe('mp4');
     });
 
-    it('should return "file" for unknown file types', () => {
-      expect(getTypeIcon('xxx')).toBe('file');
+    it('should all .svg been included in known file types', () => {
+      // current working dir should be project root dir
+      const files = fs.readdirSync('./app/assets/icons/classic');
+      let count = 0;
+      files.forEach(f => {
+        if (getFileType(f) === 'svg') {
+          count += 1;
+          const typeName = path.basename(f, '.svg');
+          expect(getTypeIcon(typeName)).toBe(typeName);
+        }
+      });
+      // there should be at least 200 known types.
+      expect(count).toBeGreaterThanOrEqual(200);
+    });
+
+    it('should return "blank" for unknown file types', () => {
+      expect(getTypeIcon('xxx')).toBe('blank');
     });
   });
 });

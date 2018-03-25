@@ -54,9 +54,10 @@ $ npm run package
 ## Credits
 - Main program: [Electron](https://electronjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) + [Webpack](https://webpack.js.org/).
 - boilerplate: [electron-react-boilerplate](https://github.com/chentsulin/electron-react-boilerplate).
-- UI Framework: [primereact](https://www.primefaces.org/primereact/)
 - FTP Browsing: [jsftp](https://github.com/sergi/jsftp)
 - FTP Segmented Downloading: [aria2](https://aria2.github.io/)
+- UI Framework: [primereact](https://www.primefaces.org/primereact/)
+- File type icons: [file-icon-vectors](https://github.com/dmhendricks/file-icon-vectors)
 
 ## License
 MIT

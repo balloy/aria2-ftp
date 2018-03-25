@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { getTypeIcon } from '../../utils/filetype';
 
 const FileTypeIcon = ({ type }) => (
-  <span className={`fa fa-${getTypeIcon(type)}-o`} />
+  <span className={`fiv-cla fiv-icon-${getTypeIcon(type)}`} />
 );
 
 FileTypeIcon.propTypes = {

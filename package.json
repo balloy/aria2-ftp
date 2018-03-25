@@ -1,7 +1,7 @@
 {
   "name": "aria2-ftp",
   "productName": "aria2-ftp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A FTP downloader supports Segmented Downloading.",
   "author": {
     "name": "Ken Yang",
@@ -47,7 +47,8 @@
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r babel-register ./app/main.dev",
     "start-renderer-dev": "cross-env NODE_ENV=development node --trace-warnings -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config webpack.config.renderer.dev.js",
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings -r babel-register ./internals/scripts/RunTests.js",
-    "test-all": "npm run lint && npm run flow && npm run build && npm run test && npm run test-e2e",
+    "test-all": "npm run lint && npm run lint-styles && npm run build && npm run test",
+    "test-all-bak": "npm run lint && npm run flow && npm run build && npm run test && npm run test-e2e",
     "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 node --trace-warnings -r babel-register ./internals/scripts/RunTests.js e2e",
     "test-watch": "npm test -- --watch"
   },
@@ -66,6 +67,9 @@
     "extraFiles": [
       "aria2/"
     ],
+    "nsis": {
+      "deleteAppDataOnUninstall": true
+    },
     "directories": {
       "buildResources": "resources",
       "output": "release"
