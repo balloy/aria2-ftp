@@ -1,5 +1,5 @@
 // @flow
-import { Menu, shell, BrowserWindow } from 'electron';
+import { Menu, shell, BrowserWindow, dialog, app } from 'electron';
 
 export default class MenuBuilder {
   mainWindow: BrowserWindow;
@@ -63,7 +63,7 @@ export default class MenuBuilder {
     const subMenuHelp = {
       label: 'Help',
       submenu: [
-        { label: 'Homepage', click: () => onHomepage() }
+        { label: 'About', click: () => onAbout() }
       ]
     };
 
@@ -93,9 +93,9 @@ export default class MenuBuilder {
       ]
     };
     const subMenuHelp = {
-      label: 'Help',
+      label: '&Help',
       submenu: [
-        { label: 'Homepage', click: () => onHomepage() }
+        { label: '&About', click: () => onAbout() }
       ]
     };
 
@@ -128,6 +128,17 @@ const onToggleDevTools = win => {
   }
 };
 
-const onHomepage = () => {
-  shell.openExternal('https://github.com/balloy/aria2-ftp');
+const onAbout = () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'About',
+    message: `aria2-ftp v${app.getVersion()}`,
+    buttons: ['Homepage', 'OK'],
+    defaultId: 1,
+    noLink: true,
+  }, resp => {
+    if (resp === 0) {
+      shell.openExternal('https://github.com/balloy/aria2-ftp');
+    }
+  });
 };
