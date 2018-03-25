@@ -51,10 +51,12 @@ To package for the local platform:
 $ npm run package
 ```
 
-### More details
-- Based on Electron + React + Redux + Webpack.
-- Uses [electron-react-boilerplate](https://github.com/chentsulin/electron-react-boilerplate). Check it directly for folder structure explanation, packaging options and more.
+## Credits
+- Main program: [Electron](https://electronjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) + [Webpack](https://webpack.js.org/).
+- boilerplate: [electron-react-boilerplate](https://github.com/chentsulin/electron-react-boilerplate).
 - UI Framework: [primereact](https://www.primefaces.org/primereact/)
+- FTP Browsing: [jsftp](https://github.com/sergi/jsftp)
+- FTP Segmented Downloading: [aria2](https://aria2.github.io/)
 
 ## License
 MIT
