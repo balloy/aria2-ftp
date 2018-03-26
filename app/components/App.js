@@ -20,9 +20,29 @@ const parseArgs = require('minimist');
 
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleResize = this.handleResize.bind(this);
+  }
+
   componentDidMount() {
     this.startMenuHandlers();
     this.startInitialTasks();
+    window.addEventListener('resize', this.handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleResize() {
+    // use setTimeout/clearTimeout to simulate a resizeEnd event
+    clearTimeout(this.resizeEndEvent);
+    this.resizeEndEvent = setTimeout(() => {
+      // use window.innerHeight is not accurute, but it doesn't matter since
+      // the only thing matters is that child components know height changed.
+      this.props.setHSplitSize(window.innerHeight);
+    }, 250);
   }
 
   startMenuHandlers() {
@@ -94,7 +114,7 @@ class App extends React.Component {
       <div className="root-container">
         <FtpAddressBar />
         <div className="splitpane-container">
-          <SplitPane defaultSize="70%" split="horizontal" onChange={this.props.setHSplitSize}>
+          <SplitPane defaultSize="70%" split="horizontal" onDragFinished={this.props.setHSplitSize}>
             <SplitPane defaultSize="50%" split="vertical">
               <LocalDirView />
               <FtpDirView />

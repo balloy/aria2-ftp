@@ -82,11 +82,12 @@ app.on('ready', async () => {
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
+    if (mainWindow) {
+      mainWindow.show();
+      mainWindow.focus();
+    } else {
+      log.error('"mainWindow" is not defined or closed already.');
     }
-    mainWindow.show();
-    mainWindow.focus();
   });
 
   mainWindow.on('closed', () => {

@@ -4,7 +4,6 @@ import { loadLocalDir } from '../actions/localDir';
 import { getDownloadSuggestions } from '../actions/app';
 import { joinURL } from '../utils/ftpUrl';
 import notifications from '../utils/notifications';
-import messagebox from '../utils/messagebox';
 
 const path = require('path');
 const electron = require('electron');
@@ -17,12 +16,17 @@ export const startAria2 = () => async (dispatch) => {
       dispatch(aria2cStartSuccess(client));
       resolve();
     };
+
+    // record app closing status to avoid multiple error boxes.
+    let appClosing = false;
     const onError = (err) => {
       dispatch(aria2cStartFailure(err));
 
-      // show fatal error and exit program.
-      messagebox.alert('Fatal: can not start Arir2 deamon.', err, true)
-        .ok(() => electron.remote.getCurrentWindow().close());
+      if (!appClosing) {
+        appClosing = true;
+        electron.remote.dialog.showErrorBox('Can not start Aria2 deamon.', err);
+        electron.remote.getCurrentWindow().close();
+      }
       reject();
     };
     api.startAria2(onSuccess, onError);
