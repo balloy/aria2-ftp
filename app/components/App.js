@@ -13,7 +13,7 @@ import { setFileSizeFormat } from '../actions/settings';
 import { startAria2, refreshDownloadsStatus, startDownloads } from '../actions/downloader';
 import { loadLocalDir } from '../actions/localDir';
 import { connectFtp, setSelection } from '../actions/ftp';
-import { getDownloadSuggestions } from '../actions/app';
+import { getDownloadSuggestions, downloadQueueEmpty } from '../actions/app';
 
 const electron = require('electron');
 const parseArgs = require('minimist');
@@ -26,7 +26,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.startMenuHandlers();
+    this.startIPCHandlers();
     this.startInitialTasks();
     window.addEventListener('resize', this.handleResize);
   }
@@ -45,9 +45,28 @@ class App extends React.Component {
     }, 250);
   }
 
-  startMenuHandlers() {
+  startIPCHandlers() {
     const ipcRenderer = electron.ipcRenderer;
 
+    // listen the event to control whether close the app.
+    ipcRenderer.on('on-app-closing', () => {
+      if (!this.props.downloadQueueEmpty()) {
+        electron.remote.dialog.showMessageBox({
+          type: 'question',
+          buttons: ['Yes', 'No'],
+          title: 'Confirm',
+          message: 'There\'re downloads still in the queue.\nDo you really want to quit?'
+        }, resp => {
+          // 'Yes' clicked, close the app
+          if (resp === 0) ipcRenderer.send('allow-to-close');
+        });
+      } else {
+        // nothing in the queue, close the app
+        ipcRenderer.send('allow-to-close');
+      }
+    });
+
+    // menu item event handlers
     ipcRenderer.on('file-size-format', (event, msg) => {
       this.props.setFileSizeFormat(msg);
     });
@@ -136,6 +155,7 @@ App.propTypes = {
   getDownloadSuggestions: PropTypes.func.isRequired,
   setSelection: PropTypes.func.isRequired,
   startDownloads: PropTypes.func.isRequired,
+  downloadQueueEmpty: PropTypes.func.isRequired,
   setHSplitSize: PropTypes.func.isRequired,
 };
 
@@ -148,6 +168,7 @@ const mapDispatchToProps = {
   getDownloadSuggestions,
   setSelection,
   startDownloads,
+  downloadQueueEmpty,
   setHSplitSize,
 };
 

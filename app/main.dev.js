@@ -10,7 +10,7 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 
@@ -77,9 +77,10 @@ app.on('ready', async () => {
     mainWindow.show();
 
     // A trick to make sure the window in front.
-    // https://github.com/electron/electron/issues/2867#issuecomment-153918442
-    mainWindow.minimize();
+    // https://github.com/electron/electron/issues/2867#issuecomment-261067169
+    mainWindow.setAlwaysOnTop(true);
     mainWindow.focus();
+    mainWindow.setAlwaysOnTop(false);
 
     // auto update
     if (process.env.NODE_ENV === 'production') {
@@ -92,6 +93,22 @@ app.on('ready', async () => {
         autoUpdater.checkForUpdatesAndNotify();
       }, 10000);
     }
+  });
+
+  let showExitPrompt = true;
+
+  // ask renderer process whether should close the app (mainWindow)
+  mainWindow.on('close', e => {
+    if (showExitPrompt) {
+      e.preventDefault(); // Prevents the window from closing
+      mainWindow.webContents.send('on-app-closing');
+    }
+  });
+
+  // renderer allows the app to close
+  ipcMain.on('allow-to-close', () => {
+    showExitPrompt = false;
+    mainWindow.close();
   });
 
   mainWindow.on('closed', () => {

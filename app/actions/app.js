@@ -1,4 +1,4 @@
-import { getControlFile, inDownloadQueue } from '../api/downloader';
+import { getControlFile, inDownloadQueue, canCancelAll } from '../api/downloader';
 import { joinURL } from '../utils/ftpUrl';
 import { TYPE_FOLDER } from '../utils/filetype';
 
@@ -55,4 +55,10 @@ export const getDownloadSuggestions = () => (dispatch, getState) => {
       || suggestions[index] === 'incomplete download'
       || suggestions[index] === 'different size'
   }));
+};
+
+// whether current download queue is empty
+export const downloadQueueEmpty = () => (dispatch, getState) => {
+  const { downloader } = getState();
+  return !canCancelAll(downloader.items);
 };
