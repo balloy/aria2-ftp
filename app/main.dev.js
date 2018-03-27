@@ -14,13 +14,6 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 
-const log = require('electron-log');
-
-// enable logging
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('App starting...');
-
 let mainWindow = null;
 
 if (process.env.NODE_ENV === 'production') {
@@ -63,10 +56,6 @@ app.on('window-all-closed', () => {
 
 
 app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'production') {
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
@@ -82,11 +71,26 @@ app.on('ready', async () => {
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
-    if (mainWindow) {
-      mainWindow.show();
-      mainWindow.focus();
-    } else {
-      log.error('"mainWindow" is not defined or closed already.');
+    if (!mainWindow) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    mainWindow.show();
+
+    // A trick to make sure the window in front.
+    // https://github.com/electron/electron/issues/2867#issuecomment-153918442
+    mainWindow.minimize();
+    mainWindow.focus();
+
+    // auto update
+    if (process.env.NODE_ENV === 'production') {
+      // delay the auto update detect a few seconds, to avoid slowing down
+      // the other initialazation tasks.
+      setTimeout(() => {
+        // enable logging
+        autoUpdater.logger = require('electron-log');
+        autoUpdater.logger.transports.file.level = 'info';
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 10000);
     }
   });
 
