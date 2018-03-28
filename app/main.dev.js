@@ -66,9 +66,11 @@ app.on('ready', async () => {
   loading.once('show', () => {
     mainWindow = new BrowserWindow({ show: false, width: 1200, height: 800 });
 
-    mainWindow.webContents.once('dom-ready', () => {
-      mainWindow.show();
-      mainWindow.focus();
+    mainWindow.webContents.once('did-finish-load', () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+      }
 
       loading.hide();
       loading.close();
