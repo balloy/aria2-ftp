@@ -1,7 +1,7 @@
 {
   "name": "aria2-ftp",
   "productName": "aria2-ftp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A FTP downloader supports Segmented Downloading.",
   "author": {
     "name": "Ken Yang",
@@ -60,6 +60,7 @@
       "dist/",
       "node_modules/",
       "app.html",
+      "loading.html",
       "main.prod.js",
       "main.prod.js.map",
       "package.json"

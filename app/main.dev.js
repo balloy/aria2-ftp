@@ -14,8 +14,6 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import MenuBuilder from './menu';
 
-let mainWindow = null;
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -60,61 +58,64 @@ app.on('ready', async () => {
     await installExtensions();
   }
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1200,
-    height: 800
+  let mainWindow = null;
+
+  // add a loading page to avoid slow starting up.
+  // reference: https://stackoverflow.com/questions/42292608/electron-loading-animation
+  const loading = new BrowserWindow({ show: false, frame: false, width: 600, height: 400 });
+  loading.once('show', () => {
+    mainWindow = new BrowserWindow({ show: false, width: 1200, height: 800 });
+
+    mainWindow.webContents.once('dom-ready', () => {
+      mainWindow.show();
+      mainWindow.focus();
+
+      loading.hide();
+      loading.close();
+
+      // auto update
+      if (process.env.NODE_ENV === 'production') {
+        // delay the auto update detect a few seconds, to avoid slowing down
+        // the other initialazation tasks.
+        setTimeout(() => {
+          // enable logging
+          autoUpdater.logger = require('electron-log');
+          autoUpdater.logger.transports.file.level = 'info';
+          autoUpdater.checkForUpdatesAndNotify();
+        }, 10000);
+      }
+    });
+    mainWindow.loadURL(`file://${__dirname}/app.html`);
+
+    // setup the menu
+    const menuBuilder = new MenuBuilder(mainWindow);
+    menuBuilder.buildMenu();
+
+
+    /**
+     * Handle on closing event...
+     */
+    let showExitPrompt = true;
+
+    // ask renderer process whether should close the app (mainWindow)
+    mainWindow.on('close', e => {
+      if (showExitPrompt) {
+        e.preventDefault(); // Prevents the window from closing
+        mainWindow.webContents.send('on-app-closing');
+      }
+    });
+
+    // renderer allows the app to close
+    ipcMain.on('allow-to-close', () => {
+      showExitPrompt = false;
+      mainWindow.close();
+    });
+
+    mainWindow.on('closed', () => {
+      mainWindow = null;
+    });
   });
 
-  mainWindow.loadURL(`file://${__dirname}/app.html`);
-
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
-    if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
-    }
-    mainWindow.show();
-
-    // A trick to make sure the window in front.
-    // https://github.com/electron/electron/issues/2867#issuecomment-261067169
-    mainWindow.setAlwaysOnTop(true);
-    mainWindow.focus();
-    mainWindow.setAlwaysOnTop(false);
-
-    // auto update
-    if (process.env.NODE_ENV === 'production') {
-      // delay the auto update detect a few seconds, to avoid slowing down
-      // the other initialazation tasks.
-      setTimeout(() => {
-        // enable logging
-        autoUpdater.logger = require('electron-log');
-        autoUpdater.logger.transports.file.level = 'info';
-        autoUpdater.checkForUpdatesAndNotify();
-      }, 10000);
-    }
-  });
-
-  let showExitPrompt = true;
-
-  // ask renderer process whether should close the app (mainWindow)
-  mainWindow.on('close', e => {
-    if (showExitPrompt) {
-      e.preventDefault(); // Prevents the window from closing
-      mainWindow.webContents.send('on-app-closing');
-    }
-  });
-
-  // renderer allows the app to close
-  ipcMain.on('allow-to-close', () => {
-    showExitPrompt = false;
-    mainWindow.close();
-  });
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  loading.loadURL(`file://${__dirname}/loading.html`);
+  loading.show();
 });
