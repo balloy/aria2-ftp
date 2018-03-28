@@ -53,8 +53,11 @@ class App extends React.Component {
       if (!this.props.downloadQueueEmpty()) {
         electron.remote.dialog.showMessageBox({
           type: 'question',
-          buttons: ['Yes', 'No'],
+          buttons: ['&Yes', '&No'],
           title: 'Confirm',
+          noLink: true,
+          defaultId: 1,
+          cancelId: 1,
           message: 'There\'re downloads still in the queue.\nDo you really want to quit?'
         }, resp => {
           // 'Yes' clicked, close the app
