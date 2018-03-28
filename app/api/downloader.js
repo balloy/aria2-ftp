@@ -199,12 +199,14 @@ export const resumeAll = (aria2, items, onItemResumed = nop, onError = nop) => {
 
 export const cancelItem = (aria2, item, onItemCancelled = nop, onError) => {
   aria2.forceRemove(item.gid)
-    .then(() => {
-      // remove local files
-      fs.unlinkSync(path.join(item.localDir, item.name));
-      fs.unlinkSync(path.join(item.localDir, getControlFile(item.name)));
-      return onItemCancelled(item);
-    })
+    .then(() =>
+      // delay the control file deleting a few seconds to avoid sharing violation.
+      setTimeout(() => {
+        // remove local files
+        fs.unlinkSync(path.join(item.localDir, item.name));
+        fs.unlinkSync(path.join(item.localDir, getControlFile(item.name)));
+        onItemCancelled(item);
+      }, 500))
     .catch(err => onCommonError(item, err, onError));
 };
 export const cancelAll = (aria2, items, onItemCancelled = nop, onError = nop) => {
