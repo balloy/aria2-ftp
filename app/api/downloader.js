@@ -205,13 +205,13 @@ export class Downloader extends EventEmitter {
 
   getControlFile = file => (`${file}.aria2`);
 
-  inDownloadQueue = x => (x.status === 'active' || x.status === 'waiting' || x.status === 'paused');
+  isDownloading = x => (x.status === 'active' || x.status === 'waiting' || x.status === 'paused');
 
   canPause = x => (x.status === 'active' || x.status === 'waiting');
   canPauseAll = () => this.downloads.some(x => this.canPause(x));
   canResume = x => (x.status === 'paused');
   canResumeAll = () => this.downloads.some(x => this.canResume(x));
-  canCancel = this.inDownloadQueue;   // alias
+  canCancel = this.isDownloading;   // alias
   canCancelAll = () => this.downloads.some(x => this.canCancel(x));
 
   pause(item) {

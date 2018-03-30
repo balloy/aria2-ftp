@@ -6,7 +6,7 @@ import SplitPane from 'react-split-pane';
 import FtpAddressBar from './FtpAddressBar';
 import LocalDirView from './LocalDirView';
 import FtpDirView from './FtpDirView';
-import DownloadsQueue from './DownloadsQueue';
+import DownloadQueue from './DownloadQueue';
 
 import { setHSplitSize } from '../actions/ui';
 import { setFileSizeFormat } from '../actions/settings';
@@ -137,7 +137,7 @@ class App extends React.Component {
               <LocalDirView />
               <FtpDirView />
             </SplitPane>
-            <DownloadsQueue />
+            <DownloadQueue />
           </SplitPane>
         </div>
       </div>

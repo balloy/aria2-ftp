@@ -32,7 +32,7 @@ export const getDownloadSuggestions = () => (dispatch, getState) => {
     // if the url already exists in download queue
     if (joinURL(urlBase, x.name) in downloadMap) {
       const item = downloadMap[joinURL(urlBase, x.name)];
-      if (downloader.inDownloadQueue(item)) return 'downloading';
+      if (downloader.isDownloading(item)) return 'downloading';
     }
 
     // if no local file with same name

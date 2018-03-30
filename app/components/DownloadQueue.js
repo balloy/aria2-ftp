@@ -18,7 +18,7 @@ import { formatSize, formatSpeed, formatETA } from '../utils/formatters';
 
 import { Downloader } from '../api/downloader';
 
-class DownloadsQueue extends React.Component {
+class DownloadQueue extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -164,7 +164,7 @@ class DownloadsQueue extends React.Component {
   }
 }
 
-DownloadsQueue.propTypes = {
+DownloadQueue.propTypes = {
   downloader: PropTypes.instanceOf(Downloader),
   items: PropTypes.arrayOf(PropTypes.shape({
     status: PropTypes.string.isRequired,
@@ -191,4 +191,4 @@ const mapStateToProps = (state) => ({
 export default connect(
   mapStateToProps,
   null
-)(DownloadsQueue);
+)(DownloadQueue);
