@@ -5,15 +5,15 @@ import { connect } from 'react-redux';
 import { Button } from 'primereact/components/button/Button';
 import { Panel } from 'primereact/components/panel/Panel';
 
-import { startDownloads } from '../actions/downloader';
+import { addDownloads } from '../actions/downloader';
 import { setSelection } from '../actions/ftp';
 
-const FtpDirActionsBar = ({ disabled, selection, startDownloads, setSelection }) => (
+const FtpDirActionsBar = ({ disabled, selection, addDownloads, setSelection }) => (
   <Panel>
     <form onSubmit={e => {
         e.preventDefault();
         // start downloading selected items
-        startDownloads(selection);
+        addDownloads(selection);
 
         // clear the selection
         setSelection([]);
@@ -31,7 +31,7 @@ const FtpDirActionsBar = ({ disabled, selection, startDownloads, setSelection })
 FtpDirActionsBar.propTypes = {
   disabled: PropTypes.bool.isRequired,
   selection: PropTypes.PropTypes.arrayOf(PropTypes.string).isRequired,
-  startDownloads: PropTypes.func.isRequired,
+  addDownloads: PropTypes.func.isRequired,
   setSelection: PropTypes.func.isRequired
 };
 
@@ -41,7 +41,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  startDownloads,
+  addDownloads,
   setSelection
 };
 

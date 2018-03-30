@@ -10,7 +10,7 @@ import DownloadsQueue from './DownloadsQueue';
 
 import { setHSplitSize } from '../actions/ui';
 import { setFileSizeFormat } from '../actions/settings';
-import { startAria2, refreshDownloadsStatus, startDownloads } from '../actions/downloader';
+import { startAria2, addDownloads } from '../actions/downloader';
 import { loadLocalDir } from '../actions/localDir';
 import { connectFtp, setSelection } from '../actions/ftp';
 import { getDownloadSuggestions, downloadQueueEmpty } from '../actions/app';
@@ -78,8 +78,7 @@ class App extends React.Component {
   async startInitialTasks() {
     const {
       startAria2, loadLocalDir, connectFtp,
-      refreshDownloadsStatus,
-      getDownloadSuggestions, setSelection, startDownloads
+      getDownloadSuggestions, setSelection, addDownloads
     } = this.props;
 
     // get command line arguments
@@ -122,13 +121,10 @@ class App extends React.Component {
 
         // auto start downloads
         if (args['auto-download']) {
-          startDownloads(selection);
+          addDownloads(selection);
         }
       }
     }
-
-    // refresh downloading status every 1 second.
-    setInterval(refreshDownloadsStatus, 1000);
   }
 
   render() {
@@ -154,10 +150,9 @@ App.propTypes = {
   startAria2: PropTypes.func.isRequired,
   loadLocalDir: PropTypes.func.isRequired,
   connectFtp: PropTypes.func.isRequired,
-  refreshDownloadsStatus: PropTypes.func.isRequired,
   getDownloadSuggestions: PropTypes.func.isRequired,
   setSelection: PropTypes.func.isRequired,
-  startDownloads: PropTypes.func.isRequired,
+  addDownloads: PropTypes.func.isRequired,
   downloadQueueEmpty: PropTypes.func.isRequired,
   setHSplitSize: PropTypes.func.isRequired,
 };
@@ -167,10 +162,9 @@ const mapDispatchToProps = {
   startAria2,
   loadLocalDir,
   connectFtp,
-  refreshDownloadsStatus,
   getDownloadSuggestions,
   setSelection,
-  startDownloads,
+  addDownloads,
   downloadQueueEmpty,
   setHSplitSize,
 };

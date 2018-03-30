@@ -16,10 +16,7 @@ import { ContextMenu } from 'primereact/components/contextmenu/ContextMenu';
 import { getFileType } from '../utils/filetype';
 import { formatSize, formatSpeed, formatETA } from '../utils/formatters';
 
-import { pauseItem, pauseAll, canPause, canPauseAll,
-  resumeItem, resumeAll, canResume, canResumeAll,
-  cancelItem, cancelAll, canCancel, canCancelAll
-} from '../actions/downloader';
+import { Downloader } from '../api/downloader';
 
 class DownloadsQueue extends React.Component {
   constructor() {
@@ -31,12 +28,7 @@ class DownloadsQueue extends React.Component {
   }
 
   render() {
-    const { items,
-      pauseItem, pauseAll,
-      resumeItem, resumeAll,
-      cancelItem, cancelAll,
-      sizeFormat
-    } = this.props;
+    const { downloader, items, sizeFormat } = this.props;
 
     // add derived fields
     const getEta = x => {
@@ -113,14 +105,14 @@ class DownloadsQueue extends React.Component {
       {
         label: 'Pause',
         icon: 'fa-pause-circle',
-        command: () => pauseItem(this.state.contextItem),
-        disabled: !canPause(this.state.contextItem)
+        command: () => downloader.pause(this.state.contextItem),
+        disabled: !downloader.canPause(this.state.contextItem)
       },
       {
         label: 'Pause All',
         icon: 'fa-pause',
-        command: () => pauseAll(items),
-        disabled: !canPauseAll(items)
+        command: () => downloader.pauseAll(),
+        disabled: !downloader.canPauseAll()
       },
       {
         separator: true,
@@ -128,14 +120,14 @@ class DownloadsQueue extends React.Component {
       {
         label: 'Resume',
         icon: 'fa-play-circle',
-        command: () => resumeItem(this.state.contextItem),
-        disabled: !canResume(this.state.contextItem)
+        command: () => downloader.resume(this.state.contextItem),
+        disabled: !downloader.canResume(this.state.contextItem)
       },
       {
         label: 'Resume All',
         icon: 'fa-play',
-        command: () => resumeAll(items),
-        disabled: !canResumeAll(items)
+        command: () => downloader.resumeAll(),
+        disabled: !downloader.canResumeAll()
       },
       {
         separator: true,
@@ -143,14 +135,14 @@ class DownloadsQueue extends React.Component {
       {
         label: 'Cancel',
         icon: 'fa-stop-circle',
-        command: () => cancelItem(this.state.contextItem),
-        disabled: !canCancel(this.state.contextItem)
+        command: () => downloader.cancel(this.state.contextItem),
+        disabled: !downloader.canCancel(this.state.contextItem)
       },
       {
         label: 'Cancel All',
         icon: 'fa-stop',
-        command: () => cancelAll(items),
-        disabled: !canCancelAll(items)
+        command: () => downloader.cancelAll(),
+        disabled: !downloader.canCancelAll()
       },
     ];
 
@@ -173,6 +165,7 @@ class DownloadsQueue extends React.Component {
 }
 
 DownloadsQueue.propTypes = {
+  downloader: PropTypes.instanceOf(Downloader),
   items: PropTypes.arrayOf(PropTypes.shape({
     status: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -184,32 +177,18 @@ DownloadsQueue.propTypes = {
   })).isRequired,
   sizeFormat: PropTypes.string.isRequired,
   hSplitSize: PropTypes.number.isRequired,
-  pauseItem: PropTypes.func.isRequired,
-  pauseAll: PropTypes.func.isRequired,
-  resumeItem: PropTypes.func.isRequired,
-  resumeAll: PropTypes.func.isRequired,
-  cancelItem: PropTypes.func.isRequired,
-  cancelAll: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  items: state.downloader.items,
+  downloader: state.downloader,
+  items: state.downloadQueue,
   sizeFormat: state.settings.fileSizeFormat,
 
   // just used to trigger componentDidUpdate event for sub-components
   hSplitSize: state.ui.hSplitSize,
 });
 
-const mapDispatchToProps = {
-  pauseItem,
-  pauseAll,
-  resumeItem,
-  resumeAll,
-  cancelItem,
-  cancelAll
-};
-
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(DownloadsQueue);

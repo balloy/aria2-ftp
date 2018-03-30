@@ -1,4 +1,3 @@
-import { getControlFile, inDownloadQueue, canCancelAll } from '../api/downloader';
 import { joinURL } from '../utils/ftpUrl';
 import { TYPE_FOLDER } from '../utils/filetype';
 
@@ -20,7 +19,8 @@ export const getDownloadSuggestions = () => (dispatch, getState) => {
   const { localDir, ftp, downloader } = getState();
   // convert arrays to map to speed up item looking up
   const localMap = localDir.items.reduce((map, obj) => ({ ...map, [obj.name]: obj }), {});
-  const downloadMap = downloader.items.reduce((map, obj) => ({ ...map, [obj.url]: obj }), {});
+  const downloadMap = downloader.getDownloads()
+    .reduce((map, obj) => ({ ...map, [obj.url]: obj }), {});
 
   const urlBase = joinURL(ftp.address, ftp.dir);
 
@@ -32,14 +32,14 @@ export const getDownloadSuggestions = () => (dispatch, getState) => {
     // if the url already exists in download queue
     if (joinURL(urlBase, x.name) in downloadMap) {
       const item = downloadMap[joinURL(urlBase, x.name)];
-      if (inDownloadQueue(item)) return 'downloading';
+      if (downloader.inDownloadQueue(item)) return 'downloading';
     }
 
     // if no local file with same name
     if (!(x.name in localMap)) return 'new';
 
     // if there's local file with same name, and .aria2 file
-    if ((getControlFile(x.name)) in localMap) return 'incomplete download';
+    if ((downloader.getControlFile(x.name)) in localMap) return 'incomplete download';
 
     // if there's local file with same name but different size
     if (x.size !== localMap[x.name].size) return 'different size';
@@ -60,5 +60,5 @@ export const getDownloadSuggestions = () => (dispatch, getState) => {
 // whether current download queue is empty
 export const downloadQueueEmpty = () => (dispatch, getState) => {
   const { downloader } = getState();
-  return !canCancelAll(downloader.items);
+  return !downloader.canCancelAll();
 };

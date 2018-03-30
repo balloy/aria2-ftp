@@ -5,7 +5,7 @@ import settings from './settings';
 import localDir from './localDir';
 import ftp from './ftp';
 import downloader from './downloader';
-
+import downloadQueue from './downloadQueue';
 
 const rootReducer = combineReducers({
   ui,
@@ -13,6 +13,7 @@ const rootReducer = combineReducers({
   localDir,
   ftp,
   downloader,
+  downloadQueue,
   ...createForms({
     localDirForm: { dir: '.' },
     ftpDirForm: { dir: '/' },
