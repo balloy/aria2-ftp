@@ -1,5 +1,5 @@
 
-import { getFileType, getTypeIcon, TYPE_FOLDER } from '../../app/utils/filetype';
+import { getFileType, getTypeIcon, TYPE_FOLDER } from '../../app/utils/fileType';
 
 const fs = require('fs');
 const path = require('path');

@@ -20,7 +20,20 @@ export default class MenuBuilder {
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
 
+    // store menu itmes which might need to change status with config file.
+    const subMenuView = process.platform === 'darwin' ? menu.items[0] : menu.items[1];
+    this.fileSizeHumanItem = subMenuView.submenu.items[0];
+    this.fileSizeBytesItem = subMenuView.submenu.items[1];
+
     return menu;
+  }
+
+  updateState(settings) {
+    if (settings.fileSizeFormat === 'bytes') {
+      this.fileSizeBytesItem.checked = true;
+    } else {
+      this.fileSizeHumanItem.checked = true;
+    }
   }
 
   setupDevelopmentEnvironment() {

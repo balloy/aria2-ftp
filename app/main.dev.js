@@ -93,6 +93,11 @@ app.on('ready', async () => {
     const menuBuilder = new MenuBuilder(mainWindow);
     menuBuilder.buildMenu();
 
+    // to handle the case that renderer needs to update menu status
+    ipcMain.on('update-menu-state', (event, msg) => {
+      menuBuilder.updateState(msg);
+    });
+
 
     /**
      * Handle on closing event...

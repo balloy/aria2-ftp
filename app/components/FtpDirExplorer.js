@@ -14,7 +14,7 @@ import checkboxTableHOC from './common/checkboxTableHOC';
 const MyCheckBoxTable = checkboxTableHOC(myDataTableHOC(DataTable));
 
 import { formatSize, formatDateTime } from '../utils/formatters';
-import { TYPE_FOLDER } from '../utils/filetype';
+import { TYPE_FOLDER } from '../utils/fileType';
 
 const FtpDirExplorer = ({
   errorMsg, isFetching, items,

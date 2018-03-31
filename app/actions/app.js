@@ -1,5 +1,5 @@
 import { joinURL } from '../utils/ftpUrl';
-import { TYPE_FOLDER } from '../utils/filetype';
+import { TYPE_FOLDER } from '../utils/fileType';
 
 /*
 For each file in ftpItems, give download suggestions based on the status of

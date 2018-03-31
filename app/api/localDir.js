@@ -1,7 +1,7 @@
 /*
 Utilities to operate local FileSystem.
 */
-import { getFileType, TYPE_FOLDER } from '../utils/filetype';
+import { getFileType, TYPE_FOLDER } from '../utils/fileType';
 
 const fs = require('fs');
 const path = require('path');

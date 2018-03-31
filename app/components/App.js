@@ -14,10 +14,10 @@ import { startAria2, addDownloads } from '../actions/downloader';
 import { loadLocalDir } from '../actions/localDir';
 import { connectFtp, setSelection } from '../actions/ftp';
 import { getDownloadSuggestions, downloadQueueEmpty } from '../actions/app';
+import { saveSettings } from '../utils/settings';
 
 const electron = require('electron');
 const parseArgs = require('minimist');
-
 
 class App extends React.Component {
   constructor(props) {
@@ -61,11 +61,13 @@ class App extends React.Component {
           message: 'There\'re downloads still in the queue.\nDo you really want to quit?'
         }, resp => {
           // 'Yes' clicked, close the app
-          if (resp === 0) ipcRenderer.send('allow-to-close');
+          if (resp === 0) {
+            this.closeApp();
+          }
         });
       } else {
         // nothing in the queue, close the app
-        ipcRenderer.send('allow-to-close');
+        this.closeApp();
       }
     });
 
@@ -127,6 +129,13 @@ class App extends React.Component {
     }
   }
 
+  closeApp() {
+    saveSettings(this.props.settings);
+
+    // close the app!
+    electron.ipcRenderer.send('allow-to-close');
+  }
+
   render() {
     return (
       <div className="root-container">
@@ -146,6 +155,9 @@ class App extends React.Component {
 }
 
 App.propTypes = {
+  settings: PropTypes.shape({
+    fileSizeFormat: PropTypes.string.isRequired,
+  }).isRequired,
   setFileSizeFormat: PropTypes.func.isRequired,
   startAria2: PropTypes.func.isRequired,
   loadLocalDir: PropTypes.func.isRequired,
@@ -156,6 +168,10 @@ App.propTypes = {
   downloadQueueEmpty: PropTypes.func.isRequired,
   setHSplitSize: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = (state) => ({
+  settings: state.settings,
+});
 
 const mapDispatchToProps = {
   setFileSizeFormat,
@@ -170,6 +186,6 @@ const mapDispatchToProps = {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(App);

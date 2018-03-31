@@ -4,7 +4,7 @@ FTP client wrapper.
 */
 
 import { joinURL } from '../utils/ftpUrl';
-import { getFileType, TYPE_FOLDER } from '../utils/filetype';
+import { getFileType, TYPE_FOLDER } from '../utils/fileType';
 
 const { URL } = require('url');
 const Jsftp = require('jsftp');

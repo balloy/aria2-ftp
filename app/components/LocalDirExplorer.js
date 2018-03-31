@@ -11,7 +11,7 @@ import myDataTableHOC from './common/myDataTableHOC';
 const MyDataTable = myDataTableHOC(DataTable);
 
 import { formatSize, formatDateTime } from '../utils/formatters';
-import { TYPE_FOLDER } from '../utils/filetype';
+import { TYPE_FOLDER } from '../utils/fileType';
 
 import { loadLocalDir } from '../actions/localDir';
 

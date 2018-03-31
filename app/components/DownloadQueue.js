@@ -13,7 +13,7 @@ const MyDataTable = myDataTableHOC(DataTable);
 import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
 import { ContextMenu } from 'primereact/components/contextmenu/ContextMenu';
 
-import { getFileType } from '../utils/filetype';
+import { getFileType } from '../utils/fileType';
 import { formatSize, formatSpeed, formatETA } from '../utils/formatters';
 
 import { Downloader } from '../api/downloader';
