@@ -5,6 +5,7 @@ const electronSettings = require('electron-settings');
 // map from state(reducer/settings) to settings in config file
 const stateToSettingMap = {
   fileSizeFormat: 'display.file-size-format',
+  downloadSplit: 'download.split',
 };
 
 // read settings from config file

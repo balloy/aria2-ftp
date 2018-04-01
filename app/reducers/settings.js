@@ -10,6 +10,16 @@ const fileSizeFormat = (state = 'human', action) => {
   }
 };
 
+const downloadSplit = (state = 5, action) => {
+  switch (action.type) {
+    case types.SET_DOWNLOAD_SPLIT:
+      return action.split;
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   fileSizeFormat,  // string, 'bytes' or 'human'
+  downloadSplit,   // number, 1-16
 });

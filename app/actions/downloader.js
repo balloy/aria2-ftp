@@ -28,7 +28,7 @@ export const startAria2 = () => async (dispatch) => {
 };
 
 export const addDownloads = (fileNames) => (dispatch, getState) => {
-  const { localDir, ftp, downloader } = getState();
+  const { localDir, ftp, downloader, settings } = getState();
   // todo: allow user specify split, currently use default setting in aria2.conf file
   // console.log(`addDownloads, split: ${split}, local dir: ${localDir.dir}`);
   console.log('addDownloads, local dir:', localDir.dir);
@@ -56,6 +56,7 @@ export const addDownloads = (fileNames) => (dispatch, getState) => {
     }
   });
 
+  downloader.setDownloadOptions({ split: settings.downloadSplit });
   downloader.addDownloads(uris, localDir.dir);
 };
 

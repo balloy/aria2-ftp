@@ -3,6 +3,8 @@ export const SET_HORIZONTAL_SPLIT_SIZE = 'SET_HORIZONTAL_SPLIT_SIZE';
 
 // for settings
 export const SET_FILE_SIZE_FORMAT = 'SET_FILE_SIZE_FORMAT';
+export const SET_DOWNLOAD_SPLIT = 'SET_DOWNLOAD_SPLIT';
+
 
 // for local dir browsing
 export const LOCAL_DIR_LOAD_REQUEST = 'LOCAL_DIR_LOAD_REQUEST';

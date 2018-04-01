@@ -177,4 +177,19 @@ describe('downloader', () => {
       downloader.cancel(testItem);
     });
   });
+
+  describe('DownloadOptions', () => {
+    it('should be able to add/update download options', () => {
+      downloader.setDownloadOptions({ split: 3 });
+      expect(downloader.getDownloadOptions()).toHaveProperty('split', 3);
+      downloader.setDownloadOptions({ t1: 'a', t2: 2 });
+      expect(downloader.getDownloadOptions()).toHaveProperty('t1', 'a');
+      expect(downloader.getDownloadOptions()).toHaveProperty('t2', 2);
+      expect(downloader.getDownloadOptions()).toHaveProperty('split', 3);
+      downloader.setDownloadOptions({ split: 7, t2: 20 });
+      expect(downloader.getDownloadOptions()).toHaveProperty('t1', 'a');
+      expect(downloader.getDownloadOptions()).toHaveProperty('t2', 20);
+      expect(downloader.getDownloadOptions()).toHaveProperty('split', 7);
+    });
+  });
 });

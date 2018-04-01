@@ -16,6 +16,7 @@ export class Downloader extends EventEmitter {
     super();
     this.aria2 = aria2;
     this.downloads = [];
+    this.downloadOptions = {};
   }
 
   // return a Promise, with a Downloader instance.
@@ -55,7 +56,7 @@ export class Downloader extends EventEmitter {
 
       // simply log stdout/sterr outputs to console.
       child.stdout.setEncoding('utf8');
-      child.stdout.on('data', data => { if (data.trim().length) console.log(data); });
+      child.stdout.on('data', data => { if (data.trim().length) console.debug(data); });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', err => { console.error(err); reject(err); });
 
@@ -91,6 +92,16 @@ export class Downloader extends EventEmitter {
 
   getDownloads() {
     return this.downloads;
+  }
+
+  setDownloadOptions(options) {
+    this.downloadOptions = {
+      ...this.downloadOptions,
+      ...options
+    };
+  }
+  getDownloadOptions() {
+    return this.downloadOptions;
   }
 
   getFileName(item) {
@@ -159,9 +170,10 @@ export class Downloader extends EventEmitter {
   addDownloads(uris, localDir) {
     // prepare options
     const options = {
+      ...this.downloadOptions,
       dir: localDir,
-      // split,
     };
+    console.log('downloadOptions:', options);
     // for each input URIs, add it to Arir2,
     // then call tellStatus to get its details.
     uris.forEach(url => {
