@@ -7,7 +7,7 @@ const pattern = process.argv[2] === 'e2e'
 
 const result = spawn.sync(
   path.normalize('./node_modules/.bin/jest'),
-  [pattern, ...process.argv.slice(2)],
+  [pattern, ...process.argv.slice(2), '--coverage'],
   { stdio: 'inherit' }
 );
 

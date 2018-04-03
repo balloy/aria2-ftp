@@ -57,7 +57,7 @@ describe('downloader', () => {
 
   describe('addDownloads', () => {
     it('should be able to add downloads', done => {
-      downloader.on('item-added', (item) => {
+      downloader.on('item-added', item => {
         expect(item.gid.length).toBeGreaterThan(0);
         expect(item.localDir).toBe(LOCAL_DIR);
         if (downloader.getDownloads().length === REMOTE_URLS.length) {
@@ -80,7 +80,7 @@ describe('downloader', () => {
 
     it('should be able to handle both valid and invalid url in a call', done => {
       let handled = 0;
-      downloader.on('item-added', (item) => {
+      downloader.on('item-added', item => {
         expect(item.gid.length).toBeGreaterThan(0);
         handled += 1;
         if (handled === 2) done();
@@ -103,7 +103,7 @@ describe('downloader', () => {
         expect(item.gid.length).toBeGreaterThan(0);
 
         // wait until all downloads been cancelled
-        if (downloader.getDownloads.length === 0) done();
+        if (downloader.getDownloads().length === 0) done();
       });
       downloader.cancelAll();
     });
@@ -114,7 +114,7 @@ describe('downloader', () => {
       const refresh = setInterval(() => {
         downloader.refresh();
       }, 200);
-      downloader.on('item-completed', (item) => {
+      downloader.on('item-completed', item => {
         expect(item.size).toBeGreaterThan(0);
         clearInterval(refresh);
         done();
@@ -124,6 +124,11 @@ describe('downloader', () => {
   });
 
   describe('pause/resume/cancel', () => {
+    beforeAll(async (done) => {
+      downloader = await Downloader.init();  // reset the downloader
+      done();
+    });
+
     let testItem = null;
     it('should receive change/item-update, and be able to pause', done => {
       // run refresh schedulely to trigger 'item-updated'
@@ -131,9 +136,11 @@ describe('downloader', () => {
         downloader.refresh();
       }, 200);
       downloader.on('change', items => {
-        expect(items.length).toBeGreaterThan(0);
+        if (testItem === null) {  // hasn't been cancelled
+          expect(items.length).toBeGreaterThan(0);
+        }
       });
-      downloader.on('item-updated', (item) => {
+      downloader.on('item-updated', item => {
         // wait a while until download starts
         if (item.status === 'active') {
           expect(downloader.canPause(item)).toBe(true);
@@ -145,7 +152,7 @@ describe('downloader', () => {
           downloader.pause(item);
         }
       });
-      downloader.on('item-paused', (item) => {
+      downloader.on('item-paused', item => {
         expect(item.status).toBe('paused');
         expect(downloader.canResume(item)).toBe(true);
         expect(downloader.canResumeAll()).toBe(true);
@@ -158,8 +165,16 @@ describe('downloader', () => {
       downloader.addDownloads([LARGE_FILE_REMOTE_URL], LOCAL_DIR);
     });
 
+    it('should emit item-pause-failed with duplicate pause', done => {
+      downloader.on('item-pause-failed', err => {
+        expect(err.item.gid).toBe(testItem.gid);
+        done();
+      });
+      downloader.pause(testItem);
+    });
+
     it('should be able to resume', done => {
-      downloader.on('item-resumed', (item) => {
+      downloader.on('item-resumed', item => {
         expect(downloader.canPause(item)).toBe(true);
         expect(downloader.canPauseAll()).toBe(true);
         expect(downloader.canCancel(item)).toBe(true);
@@ -169,12 +184,57 @@ describe('downloader', () => {
       downloader.resume(testItem);
     });
 
+    it('should emit item-resume-failed with duplicate resume', done => {
+      downloader.on('item-resume-failed', err => {
+        expect(err.item.gid).toBe(testItem.gid);
+        done();
+      });
+      downloader.resume(testItem);
+    });
+
     it('should be able to cancel', done => {
       downloader.on('item-cancelled', () => {
-        expect(downloader.getDownloads.length).toBe(0);
+        expect(downloader.getDownloads().length).toBe(0);
         done();
       });
       downloader.cancel(testItem);
+    });
+
+    it('should emit item-cancel-failed with duplicate cancel', done => {
+      downloader.on('item-cancel-failed', err => {
+        expect(err.item.gid).toBe(testItem.gid);
+        done();
+      });
+      downloader.cancel(testItem);
+    });
+  });
+
+  describe('pauseAll/resumeAll/cancelAll', () => {
+    it('should be able to pauseAll/resumeAll', done => {
+      // run refresh schedulely to trigger 'item-updated'
+      const refresh = setInterval(() => {
+        downloader.refresh();
+      }, 200);
+      downloader.on('item-updated', () => {
+        if (downloader.canPauseAll()) {
+          downloader.pauseAll();
+        } else if (downloader.canResumeAll()) {
+          downloader.resumeAll();
+        }
+      });
+      downloader.on('item-resumed', () => {
+        clearInterval(refresh);
+        done();
+      });
+      downloader.addDownloads([LARGE_FILE_REMOTE_URL], LOCAL_DIR);
+    });
+
+    it('should be able to cancelAll', done => {
+      downloader.on('item-cancelled', () => {
+        expect(downloader.getDownloads().length).toBe(0);
+        done();
+      });
+      downloader.cancelAll();
     });
   });
 

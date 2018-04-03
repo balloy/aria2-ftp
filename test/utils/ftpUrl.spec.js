@@ -42,6 +42,7 @@ describe('utils', () => {
 
   describe('parseFTPAddress', () => {
     it('should return NULL if wrong URL format or wrong protocal', () => {
+      expect(parseFTPAddress('a')).toBeNull();
       expect(parseFTPAddress('a:b')).toBeNull();
       expect(parseFTPAddress('http://b.com')).toBeNull();
     });
