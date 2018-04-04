@@ -79,7 +79,7 @@ class App extends React.Component {
 
   async startInitialTasks() {
     const {
-      startAria2, loadLocalDir, connectFtp,
+      settings, startAria2, loadLocalDir, connectFtp,
       getDownloadSuggestions, setSelection, addDownloads
     } = this.props;
 
@@ -91,8 +91,8 @@ class App extends React.Component {
     // start aria2c deamon during Application start up.
     preTasks.push(startAria2());
 
-    // load the dir from command line or current dir.
-    preTasks.push(loadLocalDir(args.local || '.'));
+    // load the dir from command line or latest local dir.
+    preTasks.push(loadLocalDir(args.local || settings.localDir));
 
     // if there's FTP address passed from command line parameter, connect it.
     if (args.ftp) {

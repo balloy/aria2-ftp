@@ -6,6 +6,7 @@ const electronSettings = require('electron-settings');
 const stateToSettingMap = {
   fileSizeFormat: 'display.file-size-format',
   downloadSplit: 'download.split',
+  localDir: 'local.dir',
 };
 
 // read settings from config file

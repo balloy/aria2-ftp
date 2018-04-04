@@ -19,7 +19,17 @@ const downloadSplit = (state = 5, action) => {
   }
 };
 
+const localDir = (state = '.', action) => {
+  switch (action.type) {
+    case types.LOCAL_DIR_LOAD_SUCCESS:
+      return action.dir;
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
   fileSizeFormat,  // string, 'bytes' or 'human'
   downloadSplit,   // number, 1-16
+  localDir,        // latest local dir, duplicate of state.localDir.dir to make it persistent
 });
