@@ -1,7 +1,7 @@
 
 import { joinURL, buildFTPAddress, parseFTPAddress } from '../../app/utils/ftpUrl';
 
-describe('utils', () => {
+describe('utils/ftpUrl', () => {
   describe('joinURL', () => {
     it('should join the 2 input strings and add / if needed', () => {
       expect(joinURL('a', 'b')).toBe('a/b');

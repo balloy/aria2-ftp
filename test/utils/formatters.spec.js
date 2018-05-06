@@ -1,7 +1,7 @@
 
 import { formatSize, formatDateTime, formatSpeed, formatETA } from '../../app/utils/formatters';
 
-describe('utils', () => {
+describe('utils/formatters', () => {
   describe('formatSize', () => {
     it('should handle 0/undefined properly', () => {
       expect(formatSize(undefined)).toBe('');

@@ -4,7 +4,7 @@ import { getFileType, getTypeIcon, TYPE_FOLDER } from '../../app/utils/fileType'
 const fs = require('fs');
 const path = require('path');
 
-describe('utils', () => {
+describe('utils/fileType', () => {
   describe('getFileType', () => {
     it('should return extension as type', () => {
       expect(getFileType('1.txt')).toBe('txt');

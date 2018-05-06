@@ -2,7 +2,7 @@
 /* eslint promise/always-return: 0 */
 import { getRandomPort, getRandomString } from '../../app/utils/random';
 
-describe('utils', () => {
+describe('utils/random', () => {
   describe('getRandomPort', () => {
     it('should always get a free random port between 9000 and 65535', () => {
       getRandomPort().then(port => {
