@@ -28,26 +28,51 @@ Jsftp.prototype.mlsd = function mlsd(path, callback) {
     self.pasvTimeout(socket, callback);
 
     socket.once('close', err => {
-      // Split lines
+      // split lines
       const data = listing.split('\r\n');
       const list = [];
       for (let i = 0; i < data.length; ++i) {
-        const line = data[i].split(';');
-        // console.log('line: ', line);
+        const facts = data[i].split(';');
+        // console.log('facts: ', facts);
 
-        // Remove empty item, . and ..
-        if (line.length >= 7 && line[0] !== 'type=cdir' && line[0] !== 'type=pdir') {
+        // convert facts array to dict, ref: https://tools.ietf.org/html/rfc3659.html#section-7.2
+        /*
+          sample facts format:
+          [ 'type=dir',
+            'sizd=13',
+            'modify=20181006014050',
+            ...
+            ' test folder' ]
+        */
+        const item = {};
+        for (let j = 0; j < facts.length; ++j) {
+          const fact = facts[j];
+          if (fact[0] === ' ') {
+            // RFC: entry            = [ facts ] SP pathname
+            // first char space, this is actually the entry(path name) not a fact.
+            item.name = fact.substr(1);
+          } else {
+            // RFC: fact             = factname "=" value
+            const fe = fact.indexOf('='); // doing this way - rather than split - in case there can be an "=" in the fact value
+            if (fe > 0) { // if nothing before the = - not really usable anyway
+              const factname = fact.substr(0, fe).toLowerCase();
+              const factvalue = fact.substr(fe + 1);
+              item[factname] = factvalue;
+            }
+          }
+        }
+        // console.log('item: ', item);
+
+
+        // ignore empty item, . and ..
+        if (item.type && item.type !== 'cdir' && item.type !== 'pdir') {
+          const str2date = timeVal => {
+            const p = timeVal.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\.\d+)?$/);
+            const millis = p[7] ? p[7] : 0;
+            return Date.UTC(p[1], p[2] - 1, p[3], p[4], p[5], p[6], millis);
+          };
+
           /*
-            sample line format:
-            [ 'type=dir',
-              'sizd=13',
-              'modify=20181006014050',
-              'UNIX.mode=0775',
-              'UNIX.uid=1000',
-              'UNIX.gid=1000',
-              'unique=49g65ca',
-              ' [EAC][180926] Summer Pockets Original SoundTrack [FLAC+CUE+LOG+TIF]'
-            ]
             sample target format:
             [{
               name: 'sample_folder',
@@ -57,18 +82,11 @@ Jsftp.prototype.mlsd = function mlsd(path, callback) {
              },
             ]
           */
-
-          const str2date = timeVal => {
-            const p = timeVal.match(/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\.\d+)?$/);
-            const millis = p[7] ? p[7] : 0;
-            return Date.UTC(p[1], p[2] - 1, p[3], p[4], p[5], p[6], millis);
-          };
-
           list.push({
-            name: line[7].substr(1),  // remove first space
-            type: line[0] === 'type=dir' ? 1 : 0,
-            time: str2date(line[2].replace('modify=', '')),
-            size: line[1].replace('size=', '').replace('sizd=', '')
+            name: item.name,
+            type: item.type === 'dir' ? 1 : 0,
+            time: str2date(item.modify),
+            size: item.size || item.sizd
           });
         }
       }
@@ -176,35 +194,37 @@ const resolveItems = (resolve, dir, rawItems, timeDiff) => {
   resolve({ dir, items });
 };
 
-export const readDir = (ftpClient, inputDir) => {
+export const readDir = (ftpClient, inputDir) => new Promise((resolve, reject) => {
   const dir = inputDir || '/';
 
   console.log(`Begin loading FTP folder: ${dir}`);
-  const func = ftpClient.hasFeat('mlsd') ? readDirMLSD : readDirLS;
-  return func(ftpClient, dir);
-};
 
-const readDirMLSD = (ftpClient, dir) => new Promise((resolve, reject) => {
-  console.log('Using MLSD');
+  // change dir first then call ls/msld, otherwise may fail handling paths with space.
   ftpClient.raw('CWD', dir, error => {
     if (error) {
       console.warn(error);
       return reject(error.message);
     }
 
-    ftpClient.mlsd('', (error2, items) => {
-      if (error2) {
-        console.warn(error2);
-        return reject(error2.message);
-      }
-      return resolveItems(resolve, dir, items, 0);
-    });
+    const func = ftpClient.hasFeat('mlsd') ? readDirMLSD : readDirLS;
+    return func(ftpClient, dir, resolve, reject);
   });
 });
 
-const readDirLS = (ftpClient, dir) => new Promise((resolve, reject) => {
+const readDirMLSD = (ftpClient, dir, resolve, reject) => {
+  console.log('Using MLSD');
+  ftpClient.mlsd('', (error, items) => {
+    if (error) {
+      console.warn(error);
+      return reject(error.message);
+    }
+    return resolveItems(resolve, dir, items, 0);
+  });
+};
+
+const readDirLS = (ftpClient, dir, resolve, reject) => {
   console.log('Using LS');
-  ftpClient.ls(dir, (error, items) => {
+  ftpClient.ls('.', (error, items) => {
     if (error) {
       console.warn(error);
       return reject(error.message);
@@ -235,4 +255,4 @@ const readDirLS = (ftpClient, dir) => new Promise((resolve, reject) => {
       return resolveItems(resolve, dir, items, diff);
     });
   });
-});
+};

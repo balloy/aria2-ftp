@@ -64,12 +64,12 @@ export const loadFtpDir = inputDir => (dispatch, getState) => {
         return resolve();
       })
       .catch(async () => {
-        const msg = `Sorry, '${inputDir}' does not exist. Going back to root.`;
+        const msg = `Sorry, '${inputDir}' does not exist or cannot be accessed. Going back.`;
         dispatch(ftpDirLoadFailure(msg));
         notifications.warn(msg);
 
         // go back to root
-        await dispatch(loadFtpDir('/'));
+        await dispatch(loadFtpDir(getState().ftp.dir));
         resolve();
       });
   });
