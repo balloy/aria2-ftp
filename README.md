@@ -51,6 +51,11 @@ To package for the local platform:
 $ npm run package
 ```
 
+### Publishing to Github
+```bash
+$ npm run publish
+```
+
 ## Credits
 - Main program: [Electron](https://electronjs.org/) + [React](https://reactjs.org/) + [Redux](https://redux.js.org/) + [Webpack](https://webpack.js.org/).
 - boilerplate: [electron-react-boilerplate](https://github.com/chentsulin/electron-react-boilerplate).
