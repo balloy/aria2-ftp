@@ -144,7 +144,7 @@
     "flow-typed": "^2.5.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^22.1.4",
-    "node-sass": "^4.7.2",
+    "node-sass": "^7.0.0",
     "npm": "^5.8.0",
     "npm-logical-tree": "^1.2.1",
     "react-test-renderer": "^16.2.0",
